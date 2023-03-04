@@ -49,14 +49,14 @@ pipeline {
             }
         }
 
-/*         stage('CODE ANALYSIS with SONARQUBE') {
+        stage('CODE ANALYSIS with SONARQUBE') {
 
             environment {
                 scannerHome = tool 'mysonarscanner4'
             }
 
             steps {
-                withSonarQubeEnv('sonar-pro') {
+                withSonarQubeEnv('sonar') {
                     sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
                    -Dsonar.projectName=vprofile-repo \
                    -Dsonar.projectVersion=1.0 \
@@ -72,7 +72,7 @@ pipeline {
                 }
             }
         }
- */
+
         stage("Build App Image") {
             steps {
                 // sh 'docker build -t ${registry}:V${BUILD_NUMBER} .'
@@ -82,7 +82,7 @@ pipeline {
             }
         }
 
-/*         stage("Upload Image") {
+        stage("Upload Image") {
             steps {
                 script {
                     docker.withRegistry("", registryCredential) {
@@ -104,5 +104,6 @@ pipeline {
                 sh "helm upgrade --install --force --namespace prod vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER}"
             }
         }
- */    }
+    
+    }
 }
