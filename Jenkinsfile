@@ -1,17 +1,13 @@
 pipeline {
-
     agent any
-
 	tools {
 	    maven "MAVEN3"
 	    jdk "OracleJDK8"
     }
-
     environment {
         registry = "ikuyucu/vprofile"
         registryCredential = "dockerhub"
     }
-
     stages{
 
         stage('BUILD'){
@@ -25,19 +21,16 @@ pipeline {
                 }
             }
         }
-
         stage('UNIT TEST'){
             steps {
                 sh 'mvn test'
             }
         }
-
         stage('INTEGRATION TEST'){
             steps {
                 sh 'mvn verify -DskipUnitTests'
             }
         }
-
         stage ('CODE ANALYSIS WITH CHECKSTYLE'){
             steps {
                 sh 'mvn checkstyle:checkstyle'
@@ -48,13 +41,13 @@ pipeline {
                 }
             }
         }
-
         stage('CODE ANALYSIS with SONARQUBE') {
-
             environment {
                 scannerHome = tool 'mysonarscanner4'
             }
-
+            tools {
+                jdk "OpenJDK11"
+            }
             steps {
                 withSonarQubeEnv('sonar') {
                     sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
@@ -66,13 +59,11 @@ pipeline {
                    -Dsonar.jacoco.reportsPath=target/jacoco.exec \
                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
                 }
-
                 timeout(time: 10, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
             }
         }
-
         stage("Build App Image") {
             steps {
                 // sh 'docker build -t ${registry}:V${BUILD_NUMBER} .'
@@ -81,7 +72,6 @@ pipeline {
                 }
             }
         }
-
         stage("Upload Image") {
             steps {
                 script {
@@ -92,18 +82,15 @@ pipeline {
                 }
             }
         }
-
         stage("Remove Unused Images") {
             steps {
                 sh "docker rmi $registry:V$BUILD_NUMBER"
             }
         }
-
         stage("Kubernetes Deploy") {
             steps {
                 sh "helm upgrade --install --force --namespace prod vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER}"
             }
         }
-    
     }
 }
