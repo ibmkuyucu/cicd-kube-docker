@@ -90,7 +90,6 @@ pipeline {
                 }
             }
         }
-    }
 
         stage("Remove Unused Images") {
             steps {
@@ -103,4 +102,5 @@ pipeline {
                 sh "helm upgrade --install --force --namespace prod vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER}"
             }
         }
+    }
 }
