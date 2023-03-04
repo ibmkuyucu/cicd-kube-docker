@@ -74,13 +74,14 @@ pipeline {
  */
         stage("Build App Image") {
             steps {
-                script {
+                sh 'docker buildx build --platform linux/amd64,linux/arm64 -t ${registry}:V${BUILD_NUMBER} --load . '
+/*                 script {
                     dockerImage = docker.build registry + ":V$BUILD_NUMBER"
-                }
+                } */
             }
         }
 
-        stage("Upload Image") {
+/*         stage("Upload Image") {
             steps {
                 script {
                     docker.withRegistry("", registryCredential) {
@@ -102,5 +103,5 @@ pipeline {
                 sh "helm upgrade --install --force --namespace prod vprofile-stack helm/vprofilecharts --set appimage=${registry}:V${BUILD_NUMBER}"
             }
         }
-    }
+ */    }
 }
