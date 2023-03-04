@@ -1,11 +1,12 @@
 pipeline {
 
     agent any
-/*
+
 	tools {
-        maven "maven3"
+	    maven "MAVEN3"
+	    jdk "OracleJDK8"
     }
-*/
+
     environment {
         registry = "ikuyucu/vprofile"
         registryCredential = "dockerhub"
@@ -74,10 +75,10 @@ pipeline {
  */
         stage("Build App Image") {
             steps {
-                sh 'docker buildx build --platform linux/amd64,linux/arm64 -t ${registry}:V${BUILD_NUMBER} --load . '
-/*                 script {
+                // sh 'docker build -t ${registry}:V${BUILD_NUMBER} .'
+                script {
                     dockerImage = docker.build registry + ":V$BUILD_NUMBER"
-                } */
+                }
             }
         }
 
